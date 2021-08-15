@@ -1,8 +1,7 @@
 CREATE DATABASE IF NOT EXISTS sql_puzzle;
 use sql_puzzle;
 DROP TABLE IF EXISTS FiscalYearTable1;
-CREATE TABLE FiscalYearTable1 
-(
+CREATE TABLE FiscalYearTable1 (
   fiscal_year INTEGER NOT NULL PRIMARY KEY,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
