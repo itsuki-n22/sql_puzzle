@@ -1,5 +1,6 @@
 # sql_puzzle
 
+MySQL 8.x を推奨。（CHECK関数などが MySQL 5.x系では対応していないため）
 ## Usage
 
 コンテナのビルドと実行
