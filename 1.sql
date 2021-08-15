@@ -14,7 +14,11 @@ CREATE TABLE FiscalYearTable1
   CONSTRAINT valid_end_date
     CHECK ((EXTRACT(YEAR FROM end_date) = fiscal_year)
       AND (EXTRACT(MONTH FROM end_date) = 09)
-      AND (EXTRACT(Day FROM end_date) = 30))
+      AND (EXTRACT(Day FROM end_date) = 30)),
+  CONSTRAINT check_interval
+    CHECK ((end_date - INTERVAL 365 DAY = start_date)
+      OR (end_date - INTERVAL 364 DAY = start_date)
+    ) -- INTERVAL 関数は +-と 時間単位が必須になる
 );
 
 \! echo === show FiscalYearTable1 table ===\\n;
