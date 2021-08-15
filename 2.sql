@@ -27,7 +27,7 @@ CREATE TABLE Absenteeism
     CHECK ((severity_points BETWEEN 1 AND 4 )),
   PRIMARY KEY (emp_id, absent_date),
   -- 書籍と違って、FOREIGN KEY で外部キーを指定しないと外部キー制約が反映されない（REFERENCES だけではだめ)
-  FOREIGN KEY (emp_id) REFERENCES Personnel1 (emp_id), 
+  FOREIGN KEY (emp_id) REFERENCES Personnel1 (emp_id) ON DELETE CASCADE, 
   FOREIGN KEY (reason_code) REFERENCES ExcuseList (reason_code)
 );
 INSERT INTO Absenteeism VALUES
@@ -37,7 +37,8 @@ INSERT INTO Absenteeism VALUES
 (1,'2021-01-05',1,1),
 (1,'2021-02-03',1,1),
 (2,'2021-03-03',1,1),
-(3,'2021-04-03',1,1);
+(3,'2021-04-03',1,1),
+(3,'2019-04-03',1,1);
 
 -- SOLUTION --
 ALTER TABLE Absenteeism DROP CONSTRAINT valid_severity_points;
@@ -67,7 +68,22 @@ SET Absenteeism.severity_points = 0, Absenteeism.reason_code = 4
 WHERE Absenteeism.emp_id = A2.emp_id
   AND Absenteeism.absent_date = (A2.absent_date + INTERVAL 1 DAY);
 
+DELETE FROM Personnel1
+WHERE emp_id = (
+  SELECT A1.emp_id
+    FROM Absenteeism AS A1
+    WHERE A1.emp_id = Personnel1.emp_id
+      AND absent_date
+        BETWEEN CURRENT_TIMESTAMP - INTERVAL 1 YEAR
+            AND CURRENT_TIMESTAMP
+    GROUP BY A1.emp_id
+    HAVING SUM(severity_points) > 1
+);
+
+
 -- MySQLは自己結合で削除する場合、派生ビューの中(select * FROM (conditions))にテーブルを展開することで自己相関問い合わせを再現できる。
+-- これは本書からずれて、Absenteeism だけで削除するパターン
+/*
 DELETE FROM Absenteeism 
 WHERE emp_id IN (
   SELECT * FROM (
@@ -76,7 +92,7 @@ WHERE emp_id IN (
       FROM Absenteeism AS a2
       WHERE a2.emp_id = a1.emp_id
         AND absent_date
-          BETWEEN CURRENT_TIMESTAMP - INTERVAL 365 DAY
+          BETWEEN CURRENT_TIMESTAMP - INTERVAL 1 YEAR
               AND CURRENT_TIMESTAMP
       GROUP BY a2.emp_id
       HAVING SUM(a2.severity_points) > 1
@@ -84,10 +100,13 @@ WHERE emp_id IN (
   ) AS tmp -- SELECT * FROM () とした場合、名前のないビューは名前を持たせる必要があり、AS <name> が必要になる これは派生ビューと呼ぶ
 )
 ;
-
+*/
 
 \! echo === show Absenteeism table ===\\n;
 desc Absenteeism;
 
 \! echo \\n=== show Absenteeism table ===\\n;
 SELECT * FROM Absenteeism;
+
+\! echo \\n=== show Personnel1 table ===\\n;
+SELECT * FROM Personnel1;
