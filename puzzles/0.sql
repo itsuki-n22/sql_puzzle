@@ -1,7 +1,10 @@
-DROP TABLE IF EXISTS hoge;
-CREATE TABLE hoge ();
+CREATE DATABASE IF NOT EXISTS sql_puzzle;
+use sql_puzzle;
 
+DROP TABLE IF EXISTS Foobar;
+CREATE TABLE Foobar(
 
+);
 
-\! echo === show hoge table ===;
-desc hoge;
+\! echo \\n=== show answer ===\\n;
+SELECT * FROM Foobar;
