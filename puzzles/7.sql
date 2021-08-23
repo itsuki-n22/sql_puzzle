@@ -78,3 +78,5 @@ FROM Succession AS S1, Succession AS S2
 WHERE S1.chain = S2.chain
   AND S1.next = S2.next + 1
   AND S1.file_id = 324;
+
+SELECT * FROM Portfolios;
